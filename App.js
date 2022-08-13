@@ -1,19 +1,33 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
 
+// 1) MIDDLEWARES
+app.use(morgan('dev'));
+
 app.use(express.json()); // express.json이 middleware이다
 // 만약 이 middleware가 없으면 json 형식의 request.body를 출력하였을 때 undefined가 나옴
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// 2) ROUTE HANDLER
 const getAllTours = (req, res) => {
-  res
-    .status(200)
-    .json({ status: 'success', results: tours.length, data: { tours: tours } });
+  console.log(req.requestTime);
+  res.status(200).json({
+    status: 'success',
+    requestTime: req.requestTime,
+    results: tours.length,
+    data: { tours: tours },
+  });
 };
 
 const getTour = (req, res) => {
@@ -88,20 +102,70 @@ const deleteTour = (req, res) => {
   }
 };
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'err',
+    message: 'api not prepared!',
+  });
+};
+
+const addUser = (req, res) => {
+  res.status(500).json({
+    status: 'err',
+    message: 'api not prepared!',
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'err',
+    message: 'api not prepared!',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'err',
+    message: 'api not prepared!',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'err',
+    message: 'api not prepared!',
+  });
+};
 // app.get('/api/v1/tours', getAllTours);
 // app.get('/api/v1/tours/:id', getTour);
 // app.post('/api/v1/tours', addTour);
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
-app.route('/api/v1/tours').get(getAllTours).post(addTour);
+// 3) ROUTES
 
-app
-  .route('/api/v1/tours/:id')
+
+
+const userRouter = express.Router();
+const tourRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(addTour);
+
+tourRouter
+  .route('/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
 
+userRouter.route('/').get(getAllUsers).post(addUser);
+
+userRouter
+  .route('/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
+
+  app.use('/api/v1/tours',tourRouter);
+  app.use('/api/v1/users',userRouter);
+
+// 4) START SERVER
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
