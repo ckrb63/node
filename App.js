@@ -141,29 +141,20 @@ const deleteUser = (req, res) => {
 
 // 3) ROUTES
 
-
-
 const userRouter = express.Router();
 const tourRouter = express.Router();
 
 tourRouter.route('/').get(getAllTours).post(addTour);
 
-tourRouter
-  .route('/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 userRouter.route('/').get(getAllUsers).post(addUser);
 
-userRouter
-  .route('/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
-  app.use('/api/v1/tours',tourRouter);
-  app.use('/api/v1/users',userRouter);
+// 왼쪽의 경로일 때 오른쪽의 Router 실행
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 // 4) START SERVER
 const port = 3000;
