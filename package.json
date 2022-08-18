@@ -4,13 +4,18 @@
   "description": "Learning nodejs, express, mongoDB",
   "main": "App.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "set NODE_ENV=development&&nodemon server.js",
+    "start:prod": "set NODE_ENV=production&&nodemon server.js"
   },
   "author": "Kim",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
