@@ -41,6 +41,15 @@ const testTour = new Tour({
   price: 497,
 });
 
+const tourDoc = new Tour({
+  name: 'here you are',
+  price: 300,
+});
+
+tourDoc.save().catch((err) => {
+  console.log(err);
+});
+
 testTour
   .save()
   .then((doc) => {
