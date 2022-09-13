@@ -8,6 +8,7 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
+      maxlength: [10, 'A tour must shorter than 10'],
     },
     slug: {
       type: String,
@@ -23,10 +24,19 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must havbe a difficulty'],
+      // * 위에 validator형식 [value, message]는 밑에 {value,message} 형태의 shortcut
+      enum: {
+        // ! enum은 only for string
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either: easy, medium, difficult',
+      },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      // ! min, max 는 날짜에도 가능
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
     },
     ratingsQuantity: {
       type: Number,
@@ -56,6 +66,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -73,13 +87,35 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-tourSchema.pre('save', function (next) {
-  console.log('Will save documnet...');
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save documnet...');
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+// * 여기서 전달되는 this는 query 입니다. ne 는 not equal 입니다.
+// ! query는 Tour 혹은 Tour.find()와 같은 형태입니다. not query string
+// tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  // * 정규식을 통해 find로 시작하는 method 모두 적용
+  this.find({ secretTour: { $ne: true } }); // * secretTour가 아닌 tour만 리턴
+  this.start = Date.now();
   next();
 });
 
-tourSchema.post('save', function (doc, next) {
-  console.log(doc);
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`${Date.now() - this.start} millisecnod took`);
+  console.log(docs);
+  next();
+});
+
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
   next();
 });
 
