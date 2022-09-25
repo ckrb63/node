@@ -8,13 +8,10 @@ class APIFeatures {
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
-    console.log(1);
     let queryStr = JSON.stringify(queryObj);
-    console.log(2);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/, (match) => `$${match}`);
 
     this.query = this.query.find(JSON.parse(queryStr));
-    console.log(2);
 
     return this;
     // mongodb find filter method
