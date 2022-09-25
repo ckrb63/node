@@ -20,11 +20,7 @@ app.use((req, res, next) => {
 });
 
 // 2) ROUTE HANDLER
-// app.get('/api/v1/tours', getAllTours);
-// app.get('/api/v1/tours/:id', getTour);
-// app.post('/api/v1/tours', addTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+
 
 // 3) ROUTES
 
